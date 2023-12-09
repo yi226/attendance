@@ -1,16 +1,16 @@
 # attendance
 
-A new Flutter project.
+A software to check attendance.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Web: https://yi226.github.io/attendance/
 
-A few resources to get you started if this is your first Flutter project:
+Android: https://github.com/yi226/attendance/releases
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Build from source:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- windows
+- linux
+- macos
+- ios
