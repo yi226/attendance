@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:attendance/style/color.dart';
+import 'package:attendance/style/__init__.dart';
 
 class ProgressBar extends StatelessWidget {
   final double progress;
