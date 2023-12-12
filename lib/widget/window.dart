@@ -44,7 +44,8 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
       );
 
   Widget _getMobileWindowBar() => PreferredSize(
-        preferredSize: preferredSize,
+      preferredSize: preferredSize,
+      child: SafeArea(
         child: Row(children: [
           Padding(
             padding: const EdgeInsets.only(left: 9, right: 9),
@@ -56,7 +57,7 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           Expanded(child: Container()),
         ]),
-      );
+      ));
 
   @override
   Size get preferredSize => const Size.fromHeight(40.0);

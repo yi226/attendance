@@ -17,6 +17,8 @@ dependencies:
   provider: ^6.1.1
   bitsdojo_window: ^0.1.5
   integrate_platform: ^1.0.2
+  shirne_dialog: ^4.7.1
+  flutter_localization: ^0.1.14
 
 dev_dependencies:
   flutter_test:

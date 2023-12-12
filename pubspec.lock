@@ -97,6 +97,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.18.0"
+  combined_animation:
+    dependency: transitive
+    description:
+      name: combined_animation
+      sha256: b2349c53e5c9ca88b37cd33638d3fbef70ab4816f2e494fe7b64544d2fcf1b03
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.3"
   convert:
     dependency: transitive
     description:
@@ -166,6 +174,19 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.3"
+  flutter_localization:
+    dependency: "direct main"
+    description:
+      name: flutter_localization
+      sha256: a65ae241b865f2780f2ef624a4cdd019ca894d0b7df0a0b77190746ef0b9c8fa
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.1.14"
+  flutter_localizations:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -208,6 +229,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.2"
+  intl:
+    dependency: transitive
+    description:
+      name: intl
+      sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.18.1"
   js:
     dependency: transitive
     description:
@@ -408,6 +437,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.3.2"
+  shirne_dialog:
+    dependency: "direct main"
+    description:
+      name: shirne_dialog
+      sha256: "82d28dad2a397d46caf7c757422ff8236c79ef18a4a92915c7a54ce75b911c33"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.7.1"
   sky_engine:
     dependency: transitive
     description: flutter

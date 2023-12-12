@@ -41,6 +41,13 @@ class StandardTextStyle {
     inherit: true,
     height: 1.4,
   );
+  static const TextStyle warning = TextStyle(
+    fontWeight: FontWeight.normal,
+    fontSize: SysSize.normal,
+    color: ColorPlate.orange,
+    inherit: true,
+    height: 1.4,
+  );
 }
 
 /// Standard text in project
@@ -87,6 +94,21 @@ class StText extends StatelessWidget {
           text: text,
           style: style,
           defaultStyle: StandardTextStyle.normal,
+          maxLines: maxLines,
+          align: align,
+        );
+
+  const StText.warning(
+    String? text, {
+    Key? key,
+    TextStyle? style,
+    TextAlign? align,
+    int? maxLines,
+  }) : this(
+          key: key,
+          text: text,
+          style: style,
+          defaultStyle: StandardTextStyle.warning,
           maxLines: maxLines,
           align: align,
         );

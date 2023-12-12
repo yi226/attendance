@@ -12,7 +12,10 @@ class AppLayout extends StatelessWidget {
 
     return Scaffold(
       appBar: WindowBar(
-          logo: Image.asset('assets/icons/icon.png'),
+          logo: Image.asset(
+            'assets/icons/icon.png',
+            width: 20,
+          ),
           title: const StText.big('Attendance')),
       backgroundColor: ColorPlate.lightGray,
       body: Center(
