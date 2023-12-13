@@ -20,6 +20,7 @@ class _GroupWidgetState extends State<GroupWidget> {
 
   int getNotChecked() {
     int count = 0;
+    notCheckedPersons.clear();
     for (Person person in widget.group.persons) {
       if (!person.checked) {
         count++;

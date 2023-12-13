@@ -19,6 +19,7 @@ dependencies:
   bitsdojo_window: ^0.1.5
   integrate_platform: ^1.0.2
   shirne_dialog: ^4.7.1
+  animated_custom_dropdown: ^2.0.0
   flutter_localizations:
     sdk: flutter
   

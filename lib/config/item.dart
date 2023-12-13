@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
+import 'package:attendance/config/error.dart';
 
 class Person {
   String name;
@@ -15,16 +15,11 @@ class Person {
   }
 
   static Person? fromMap(Map map) {
-    try {
+    return standardTryCatch<Person>(() {
       final name = map['name'];
       final checked = map['checked'];
       return Person(name, checked: checked);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return null;
-    }
+    });
   }
 
   Person(this.name, {this.checked = false});
@@ -43,16 +38,11 @@ class Group {
   }
 
   static Group? fromMap(Map map) {
-    try {
+    return standardTryCatch<Group>(() {
       final name = map['name'];
       final persons = map['persons'] as List;
       return Group(name, persons.map((e) => Person.fromMap(e)!).toList());
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return null;
-    }
+    });
   }
 
   Group(this.name, this.persons);
@@ -70,16 +60,11 @@ class Sheet {
   }
 
   static Sheet? fromMap(Map map) {
-    try {
+    return standardTryCatch<Sheet>(() {
       final name = map['name'];
       final groups = map['groups'] as List;
       return Sheet(name, groups.map((e) => Group.fromMap(e)!).toList());
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return null;
-    }
+    });
   }
 
   String toJson() {
@@ -87,15 +72,17 @@ class Sheet {
   }
 
   static Sheet? fromJson(String json) {
-    try {
+    return standardTryCatch<Sheet>(() {
       final map = jsonDecode(json);
       return fromMap(map);
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return null;
-    }
+    });
+  }
+
+  static Sheet? fromNameList(String name, List<String> nameList) {
+    return standardTryCatch<Sheet>(() {
+      return Sheet(
+          name, [Group('Group', nameList.map((e) => Person(e)).toList())]);
+    });
   }
 
   Sheet(this.name, this.groups);

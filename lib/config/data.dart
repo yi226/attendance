@@ -14,6 +14,7 @@ class Data extends ChangeNotifier {
     _prefs = await SharedPreferences.getInstance();
     _mode = ThemeMode.values[_prefs.getInt('themeMode') ?? 0];
     _sheets = _prefs.getStringList('sheets') ?? [];
+    _current = _prefs.getString('current') ?? '';
     notifyListeners();
   }
 
@@ -30,11 +31,12 @@ class Data extends ChangeNotifier {
   String get current => _current;
   set current(String current) {
     _current = current;
+    _prefs.setString('current', current);
     notifyListeners();
   }
 
-  List _sheets = [];
-  List get sheets => _sheets;
+  List<String> _sheets = [];
+  List<String> get sheets => _sheets.isEmpty ? ['Example'] : _sheets;
   Sheet get sheet =>
       getSheet() ??
       Sheet('Example', [
@@ -48,5 +50,15 @@ class Data extends ChangeNotifier {
     final sheetJson = _prefs.getString(_current);
     if (sheetJson == null) return null;
     return Sheet.fromJson(sheetJson);
+  }
+
+  Future<void> addSheet(Sheet sheet) async {
+    if (!_sheets.contains(sheet.name)) {
+      _sheets.add(sheet.name);
+    }
+    await _prefs.setStringList('sheets', _sheets);
+    await _prefs.setString(sheet.name, sheet.toJson());
+    _current = sheet.name;
+    notifyListeners();
   }
 }

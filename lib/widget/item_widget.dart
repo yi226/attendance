@@ -30,16 +30,12 @@ class _ItemWidgetState extends State<ItemWidget> {
         icon: const Icon(Icons.edit),
         onPressed: () async {
           final result = await MyDialog.prompt(
-              title: "修改名字",
-              builder: (context, controller) {
-                controller.text = widget.person.name;
-                return TextField(
-                  controller: controller,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                  ),
-                );
-              });
+            title: "修改名字",
+            defaultValue: widget.person.name,
+            barrierDismissible: true,
+            buttonText: 'OK',
+            cancelText: 'Cancel',
+          );
           if (result != null) {
             setState(() {
               widget.person.name = result;
