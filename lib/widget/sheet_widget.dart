@@ -3,6 +3,7 @@ import 'package:attendance/config/data.dart';
 import 'package:attendance/config/item.dart';
 import 'package:attendance/style/text.dart';
 import 'package:attendance/widget/group_widget.dart';
+import 'package:attendance/widget/sheet_edit_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -118,6 +119,27 @@ class SheetWidget extends StatelessWidget {
     );
   }
 
+  manageSheets(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('管理表'),
+        content: const SizedBox(
+          width: 300,
+          child: SheetEditWidget(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final data = context.watch<Data>();
@@ -143,12 +165,20 @@ class SheetWidget extends StatelessWidget {
                   ),
                 ),
                 Align(
-                  alignment: Alignment.centerRight,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_right),
-                    onPressed: () => changeSheet(context, data, sheet),
-                  ),
-                )
+                    alignment: Alignment.centerRight,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, size: 20),
+                          onPressed: () => manageSheets(context),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.arrow_right),
+                          onPressed: () => changeSheet(context, data, sheet),
+                        ),
+                      ],
+                    )),
               ],
             ),
           ),
@@ -161,9 +191,10 @@ class SheetWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 final group = sheet.groups[index];
                 return GroupWidget(
+                    key: ValueKey(sheet.name + group.name),
                     group: group,
-                    onChanged: () {
-                      print(group.persons[0].checked);
+                    onChanged: () async {
+                      await data.updateSheet(sheet);
                     });
               },
             ),

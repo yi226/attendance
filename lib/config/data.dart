@@ -1,4 +1,5 @@
 import 'package:attendance/config/item.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class Data extends ChangeNotifier {
     _mode = ThemeMode.values[_prefs.getInt('themeMode') ?? 0];
     _sheets = _prefs.getStringList('sheets') ?? [];
     _current = _prefs.getString('current') ?? '';
+    print(_current);
     notifyListeners();
   }
 
@@ -55,10 +57,44 @@ class Data extends ChangeNotifier {
   Future<void> addSheet(Sheet sheet) async {
     if (!_sheets.contains(sheet.name)) {
       _sheets.add(sheet.name);
+      _sheets.sort();
     }
+
     await _prefs.setStringList('sheets', _sheets);
     await _prefs.setString(sheet.name, sheet.toJson());
-    _current = sheet.name;
+    current = sheet.name;
+    notifyListeners();
+  }
+
+  Future<void> updateSheet(Sheet sheet) async {
+    await _prefs.setString(_current, sheet.toJson());
+    if (kDebugMode) {
+      print('updateSheet: $_current');
+    }
+  }
+
+  Future<void> deleteSheet(String name) async {
+    _sheets.remove(name);
+    await _prefs.setStringList('sheets', _sheets);
+    await _prefs.remove(name);
+    if (_current == name) {
+      current = _sheets.first;
+    }
+    notifyListeners();
+  }
+
+  Future<void> changeSheetName(String oldName, String newName) async {
+    _sheets.remove(oldName);
+    _sheets.add(newName);
+    _sheets.sort();
+    await _prefs.setStringList('sheets', _sheets);
+    final sheet = Sheet.fromJson(_prefs.getString(oldName)!)!;
+    sheet.name = newName;
+    await _prefs.setString(newName, sheet.toJson());
+    await _prefs.remove(oldName);
+    if (_current == oldName) {
+      current = newName;
+    }
     notifyListeners();
   }
 }

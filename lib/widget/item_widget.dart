@@ -1,7 +1,6 @@
 import 'package:attendance/config/item.dart';
 import 'package:attendance/style/__init__.dart';
 import 'package:flutter/material.dart';
-import 'package:shirne_dialog/shirne_dialog.dart';
 
 class ItemWidget extends StatefulWidget {
   final Person person;
@@ -25,25 +24,6 @@ class _ItemWidgetState extends State<ItemWidget> {
         });
       },
       title: StText.normal(widget.person.name),
-      secondary: IconButton(
-        iconSize: 16,
-        icon: const Icon(Icons.edit),
-        onPressed: () async {
-          final result = await MyDialog.prompt(
-            title: "修改名字",
-            defaultValue: widget.person.name,
-            barrierDismissible: true,
-            buttonText: 'OK',
-            cancelText: 'Cancel',
-          );
-          if (result != null) {
-            setState(() {
-              widget.person.name = result;
-              widget.onChanged();
-            });
-          }
-        },
-      ),
     );
   }
 }

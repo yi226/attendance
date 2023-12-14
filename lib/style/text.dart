@@ -44,7 +44,7 @@ class StandardTextStyle {
   static const TextStyle warning = TextStyle(
     fontWeight: FontWeight.normal,
     fontSize: SysSize.normal,
-    color: ColorPlate.orange,
+    color: ColorPlate.blue,
     inherit: true,
     height: 1.4,
   );
