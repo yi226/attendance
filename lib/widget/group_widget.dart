@@ -146,23 +146,24 @@ class _GroupWidgetState extends State<GroupWidget> {
             ? InkWell(
                 onTap: () {
                   MyDialog.popup(
-                      SizedBox(
-                        width: double.infinity,
-                        child: notChecked > 0
-                            ? Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: notCheckedPersons
-                                    .map((e) => StText.normal(e))
-                                    .toList()
-                                  ..insert(
-                                      0, const StText.medium('Not checked:')))
-                            : const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [StText.medium('All checked')],
-                              ),
-                      ),
-                      isScrollControlled: true,
-                      maxHeight: 300);
+                    SizedBox(
+                      width: double.infinity,
+                      child: notChecked > 0
+                          ? SingleChildScrollView(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: notCheckedPersons
+                                      .map((e) => StText.normal(e))
+                                      .toList()
+                                    ..insert(0,
+                                        const StText.medium('Not checked:'))),
+                            )
+                          : const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [StText.medium('All checked')],
+                            ),
+                    ),
+                  );
                 },
                 child: notChecked > 0
                     ? StText.warning('$notChecked remaining')

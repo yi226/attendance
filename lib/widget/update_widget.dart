@@ -11,9 +11,11 @@ class UpdateWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: WindowBar(
-          logo: IconButton(
-            icon: const Icon(Icons.arrow_back, size: 15),
-            onPressed: () => Navigator.of(context).pop(),
+          logo: Center(
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, size: 20),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           ),
           title: const StText.big('Update')),
       body: Center(
