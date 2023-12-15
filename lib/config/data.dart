@@ -16,7 +16,7 @@ class Data extends ChangeNotifier {
     _mode = ThemeMode.values[_prefs.getInt('themeMode') ?? 0];
     _sheets = _prefs.getStringList('sheets') ?? [];
     _current = _prefs.getString('current') ?? '';
-    print(_current);
+
     notifyListeners();
   }
 
