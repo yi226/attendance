@@ -4,6 +4,7 @@ import 'package:attendance/config/item.dart';
 import 'package:attendance/style/text.dart';
 import 'package:attendance/widget/group_widget.dart';
 import 'package:attendance/widget/sheet_edit_widget.dart';
+import 'package:attendance/widget/update_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -159,9 +160,22 @@ class SheetWidget extends StatelessWidget {
                 ),
                 Align(
                   alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => addSheet(context, data),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () => addSheet(context, data),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.info_outline),
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const UpdateWidget(),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Align(

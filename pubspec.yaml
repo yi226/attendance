@@ -20,6 +20,8 @@ dependencies:
   integrate_platform: ^1.0.2
   shirne_dialog: ^4.7.1
   animated_custom_dropdown: ^2.0.0
+  dio: ^5.4.0
+  open_filex: ^4.3.4
   flutter_localizations:
     sdk: flutter
   
