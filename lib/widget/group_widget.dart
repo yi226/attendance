@@ -176,7 +176,10 @@ class _GroupWidgetState extends State<GroupWidget> {
         children: [
           if (!editType)
             for (Person person in widget.group.persons)
-              ItemWidget(person: person, onChanged: update)
+              if (person.show)
+                ItemWidget(person: person, onChanged: update)
+              else
+                const SizedBox()
           else
             for (Person person in widget.group.persons)
               ItemEditWidget(

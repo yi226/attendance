@@ -39,15 +39,27 @@ class Data extends ChangeNotifier {
 
   List<String> _sheets = [];
   List<String> get sheets => _sheets.isEmpty ? ['Example'] : _sheets;
-  Sheet get sheet =>
-      getSheet() ??
-      Sheet('Example', [
-        Group('Group', [
-          Person('Person1'),
-          Person('Person2'),
-        ]),
-      ]);
-  Sheet? getSheet() {
+  Sheet? _sheet;
+  Sheet getSheet(bool update) {
+    if (update) {
+      _sheet = _getSheet() ??
+          Sheet('Example', [
+            Group('Group', [
+              Person('Person1'),
+              Person('Person2'),
+            ]),
+          ]);
+    }
+    return _sheet ??= _getSheet() ??
+        Sheet('Example', [
+          Group('Group', [
+            Person('Person1'),
+            Person('Person2'),
+          ]),
+        ]);
+  }
+
+  Sheet? _getSheet() {
     if (_sheets.isEmpty) return null;
     final sheetJson = _prefs.getString(_current);
     if (sheetJson == null) return null;

@@ -22,6 +22,11 @@ class Person {
     });
   }
 
+  @override
+  String toString() {
+    return 'Person{name: $name, checked: $checked, show: $show}';
+  }
+
   Person(this.name, {this.checked = false});
 }
 
@@ -83,6 +88,17 @@ class Sheet {
       return Sheet(
           name, [Group('Group', nameList.map((e) => Person(e)).toList())]);
     });
+  }
+
+  void search(String keyword) {
+    for (var group in groups) {
+      for (var person in group.persons) {
+        person.show = true;
+        if (!person.name.contains(keyword)) {
+          person.show = false;
+        }
+      }
+    }
   }
 
   Sheet(this.name, this.groups);

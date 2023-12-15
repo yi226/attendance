@@ -3,14 +3,23 @@ import 'package:attendance/config/data.dart';
 import 'package:attendance/config/item.dart';
 import 'package:attendance/style/text.dart';
 import 'package:attendance/widget/group_widget.dart';
+import 'package:attendance/widget/search_widget.dart';
 import 'package:attendance/widget/sheet_edit_widget.dart';
 import 'package:attendance/widget/update_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 
-class SheetWidget extends StatelessWidget {
+class SheetWidget extends StatefulWidget {
   const SheetWidget({super.key});
+
+  @override
+  State<SheetWidget> createState() => _SheetWidgetState();
+}
+
+class _SheetWidgetState extends State<SheetWidget> {
+  bool flag = false;
+  bool update = true;
 
   addSheet(BuildContext context, Data data) async {
     GlobalKey formKey = GlobalKey<FormState>();
@@ -79,6 +88,7 @@ class SheetWidget extends StatelessWidget {
                 return;
               }
               data.addSheet(sh);
+              flag = !flag;
               Navigator.of(context).pop();
             }
           },
@@ -144,7 +154,7 @@ class SheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = context.watch<Data>();
-    final sheet = data.sheet;
+    final sheet = data.getSheet(update);
     return Column(
       children: [
         Padding(
@@ -165,7 +175,8 @@ class SheetWidget extends StatelessWidget {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () => addSheet(context, data),
+                        onPressed:
+                            update ? () => addSheet(context, data) : null,
                       ),
                       IconButton(
                         icon: const Icon(Icons.info_outline),
@@ -185,16 +196,31 @@ class SheetWidget extends StatelessWidget {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit, size: 20),
-                          onPressed: () => manageSheets(context),
+                          onPressed:
+                              update ? () => manageSheets(context) : null,
                         ),
                         IconButton(
                           icon: const Icon(Icons.arrow_right),
-                          onPressed: () => changeSheet(context, data, sheet),
+                          onPressed: update
+                              ? () => changeSheet(context, data, sheet)
+                              : null,
                         ),
                       ],
                     )),
               ],
             ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 12, right: 12, bottom: 8),
+          child: SearchWidget(
+            width: double.infinity,
+            onEditingComplete: (v) {
+              setState(() {
+                update = v.isEmpty;
+              });
+              sheet.search(v);
+            },
           ),
         ),
         Expanded(
@@ -205,7 +231,7 @@ class SheetWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 final group = sheet.groups[index];
                 return GroupWidget(
-                    key: ValueKey(sheet.name + group.name),
+                    key: ValueKey(sheet.name + group.name + flag.toString()),
                     group: group,
                     onChanged: () async {
                       await data.updateSheet(sheet);
