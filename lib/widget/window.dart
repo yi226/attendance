@@ -8,7 +8,7 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget logo;
   final Widget title;
 
-  Widget _getDesktopWindowBar() => PreferredSize(
+  Widget _getDesktopWindowBar(BuildContext context) => PreferredSize(
         preferredSize: preferredSize,
         child: Row(children: [
           WindowTitleBarBox(
@@ -43,9 +43,12 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
         ]),
       );
 
-  Widget _getMobileWindowBar() => PreferredSize(
+  Widget _getMobileWindowBar(BuildContext context) => PreferredSize(
       preferredSize: preferredSize,
-      child: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top,
+        ),
         child: Row(children: [
           Padding(
             padding: const EdgeInsets.only(left: 9, right: 9),
@@ -65,8 +68,8 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return IntegratePlatform.isDesktop
-        ? _getDesktopWindowBar()
-        : _getMobileWindowBar();
+        ? _getDesktopWindowBar(context)
+        : _getMobileWindowBar(context);
   }
 }
 
