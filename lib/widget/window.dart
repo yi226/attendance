@@ -45,12 +45,16 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
       );
 
   Widget _getMobileWindowBar(BuildContext context) {
-    if (IntegratePlatform.isAndroid) {
+    if (IntegratePlatform.isMobile) {
       SystemUiOverlayStyle style = SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarBrightness: Theme.of(context).brightness == Brightness.dark
-            ? Brightness.light
-            : Brightness.dark,
+        statusBarBrightness: Theme.of(context).brightness == Brightness.light
+            ? Brightness.dark
+            : Brightness.light,
+        statusBarIconBrightness:
+            Theme.of(context).brightness == Brightness.light
+                ? Brightness.dark
+                : Brightness.light,
       );
       SystemChrome.setSystemUIOverlayStyle(style);
     }

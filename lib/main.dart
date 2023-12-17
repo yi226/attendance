@@ -39,6 +39,7 @@ class App extends StatelessWidget {
           ).copyWith(extensions: [const ShirneDialogTheme()]),
           darkTheme: ThemeData(
             brightness: Brightness.dark,
+            colorSchemeSeed: Colors.blue,
             useMaterial3: true,
           ).copyWith(extensions: [const ShirneDialogTheme()]),
           navigatorKey: MyDialog.navigatorKey,
