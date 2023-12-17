@@ -7,6 +7,7 @@ class Data extends ChangeNotifier {
   // Singleton pattern
   static final Data _data = Data._();
   factory Data() => _data;
+  factory Data.init() => _data;
   Data._() {
     _init();
   }

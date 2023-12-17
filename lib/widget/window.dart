@@ -1,5 +1,6 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:integrate_platform/integrate_platform.dart';
 
 class WindowBar extends StatelessWidget implements PreferredSizeWidget {
@@ -43,21 +44,32 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
         ]),
       );
 
-  Widget _getMobileWindowBar(BuildContext context) => PreferredSize(
-      preferredSize: preferredSize,
-      child: SafeArea(
-        child: Row(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 9, right: 9),
-            child: logo,
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 9, right: 9),
-            child: title,
-          ),
-          Expanded(child: Container()),
-        ]),
-      ));
+  Widget _getMobileWindowBar(BuildContext context) {
+    if (IntegratePlatform.isAndroid) {
+      SystemUiOverlayStyle style = SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarBrightness: Theme.of(context).brightness == Brightness.dark
+            ? Brightness.light
+            : Brightness.dark,
+      );
+      SystemChrome.setSystemUIOverlayStyle(style);
+    }
+    return PreferredSize(
+        preferredSize: preferredSize,
+        child: SafeArea(
+          child: Row(children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 9, right: 9),
+              child: logo,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 9, right: 9),
+              child: title,
+            ),
+            Expanded(child: Container()),
+          ]),
+        ));
+  }
 
   @override
   Size get preferredSize => const Size.fromHeight(40.0);
