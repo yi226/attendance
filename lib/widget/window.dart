@@ -45,10 +45,7 @@ class WindowBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _getMobileWindowBar(BuildContext context) => PreferredSize(
       preferredSize: preferredSize,
-      child: Padding(
-        padding: EdgeInsets.only(
-          top: MediaQuery.of(context).padding.top,
-        ),
+      child: SafeArea(
         child: Row(children: [
           Padding(
             padding: const EdgeInsets.only(left: 9, right: 9),

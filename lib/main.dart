@@ -3,6 +3,7 @@ import 'package:attendance/widget/app_layout.dart';
 import 'package:attendance/widget/sheet_widget.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:integrate_platform/integrate_platform.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -18,6 +19,10 @@ void main() {
       appWindow.size = initialSize;
       appWindow.show();
     });
+  } else if (IntegratePlatform.isAndroid) {
+    SystemUiOverlayStyle style =
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(style);
   }
 }
 

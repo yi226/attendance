@@ -28,10 +28,6 @@ class AppLayout extends StatelessWidget {
             color: Theme.of(context).canvasColor,
             borderRadius: BorderRadius.circular(isMobile ? 0 : 12),
           ),
-          // padding: EdgeInsets.only(
-          //   top: MediaQuery.of(context).padding.top,
-          //   bottom: MediaQuery.of(context).padding.bottom,
-          // ),
           child: body,
         ),
       ),
