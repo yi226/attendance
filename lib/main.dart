@@ -3,7 +3,7 @@ import 'package:attendance/widget/app_layout.dart';
 import 'package:attendance/widget/sheet_widget.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:integrate_platform/integrate_platform.dart';
+import 'package:attendance/platform/platform.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';

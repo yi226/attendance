@@ -17,11 +17,14 @@ dependencies:
   url_launcher: ^6.2.1
   provider: ^6.1.1
   bitsdojo_window: ^0.1.5
-  integrate_platform: ^1.0.2
+  file_picker: ^5.2.10
+  path_provider: ^2.1.1
   shirne_dialog: ^4.7.1
   animated_custom_dropdown: ^2.0.0
   dio: ^5.4.0
   open_filex: ^4.3.4
+  share_plus: ^6.3.4
+  permission_handler: ^11.1.0
   flutter_localizations:
     sdk: flutter
   

@@ -1,7 +1,7 @@
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:integrate_platform/integrate_platform.dart';
+import 'package:attendance/platform/platform.dart';
 
 class WindowBar extends StatelessWidget implements PreferredSizeWidget {
   const WindowBar({super.key, required this.logo, required this.title});

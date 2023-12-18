@@ -1,7 +1,11 @@
 import 'package:attendance/config/item.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:attendance/platform/platform.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 
 class Data extends ChangeNotifier {
   // Singleton pattern
@@ -91,7 +95,7 @@ class Data extends ChangeNotifier {
     await _prefs.setStringList('sheets', _sheets);
     await _prefs.remove(name);
     if (_current == name) {
-      current = _sheets.first;
+      current = sheets.first;
     }
     notifyListeners();
   }
@@ -109,5 +113,62 @@ class Data extends ChangeNotifier {
       current = newName;
     }
     notifyListeners();
+  }
+
+  List<String> exportSheets(List<String> names) {
+    final sheetsJSON = <String>[];
+    for (final name in names) {
+      sheetsJSON.add(_prefs.getString(name)!);
+    }
+
+    return sheetsJSON;
+  }
+
+  Future<List> importSheets(List<String> sheetsJSON) async {
+    List success = [];
+    for (final sheetJSON in sheetsJSON) {
+      final sheet = Sheet.fromJson(sheetJSON);
+      if (sheet == null) continue;
+      success.add(sheet.name);
+      await _prefs.setString(sheet.name, sheetJSON);
+      if (!_sheets.contains(sheet.name)) {
+        _sheets.add(sheet.name);
+        _sheets.sort();
+      }
+    }
+    if (_sheets.isNotEmpty) {
+      current = _sheets.first;
+    }
+    await _prefs.setStringList('sheets', _sheets);
+    notifyListeners();
+    return success;
+  }
+
+  Future<void> exportSheetsToFile(List<String> names) async {
+    final sheetsJSON = exportSheets(names).join('\n');
+    final result = await IntegratePlatform.writeFile(sheetsJSON, "sheets.a");
+    if (!result.success) {
+      MyDialog.alert(result.errorMessage ?? 'Failed to export sheets');
+      return;
+    }
+    if (!IntegratePlatform.isWeb && result.path != null) {
+      await Share.shareXFiles([XFile(result.path!)], text: 'Share sheets');
+    }
+    MyDialog.alert('Exported sheets to ${result.path}');
+  }
+
+  Future<void> importSheetsFromFile() async {
+    final result = await IntegratePlatform.readFile(
+        allowedExtensions: ['a'], fileType: FileType.custom);
+    if (!result.success || result.content == null) {
+      MyDialog.alert(result.errorMessage ?? 'Failed to import sheets');
+      return;
+    }
+    final sheets = result.content!.split('\n');
+    final success = await importSheets(sheets);
+    if (success.isNotEmpty) {
+      MyDialog.alert(
+          'Imported sheets from ${result.path}\n names: ${success.join(', ')}');
+    }
   }
 }

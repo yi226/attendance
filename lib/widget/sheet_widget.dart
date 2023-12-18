@@ -4,6 +4,7 @@ import 'package:attendance/config/item.dart';
 import 'package:attendance/style/text.dart';
 import 'package:attendance/widget/group_widget.dart';
 import 'package:attendance/widget/search_widget.dart';
+import 'package:attendance/widget/share_widget.dart';
 import 'package:attendance/widget/sheet_edit_widget.dart';
 import 'package:attendance/widget/update_widget.dart';
 import 'package:flutter/material.dart';
@@ -186,6 +187,10 @@ class _SheetWidgetState extends State<SheetWidget> {
                           ),
                         ),
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.upload),
+                        onPressed: () => data.importSheetsFromFile(),
+                      ),
                     ],
                   ),
                 ),
@@ -194,6 +199,18 @@ class _SheetWidgetState extends State<SheetWidget> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
+                        IconButton(
+                          icon: const Icon(Icons.download),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const AlertDialog(
+                                    content: ShareWidget(),
+                                  );
+                                });
+                          },
+                        ),
                         IconButton(
                           icon: const Icon(Icons.edit, size: 20),
                           onPressed:
