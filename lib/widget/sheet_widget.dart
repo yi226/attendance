@@ -1,6 +1,8 @@
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:attendance/config/data.dart';
 import 'package:attendance/config/item.dart';
+import 'package:attendance/platform/platform.dart';
+import 'package:attendance/share/socket_client_widget.dart';
 import 'package:attendance/style/text.dart';
 import 'package:attendance/widget/group_widget.dart';
 import 'package:attendance/widget/search_widget.dart';
@@ -161,69 +163,74 @@ class _SheetWidgetState extends State<SheetWidget> {
         Padding(
           padding: const EdgeInsets.all(8),
           child: Card(
-            child: Stack(
+            child: Row(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: StText.medium(sheet.name),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: update ? () => addSheet(context, data) : null,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const UpdateWidget(),
+                    ),
                   ),
                 ),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed:
-                            update ? () => addSheet(context, data) : null,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.info_outline),
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const UpdateWidget(),
-                          ),
+                IconButton(
+                  icon: const Icon(Icons.upload),
+                  onPressed: () {
+                    MyDialog.alert(
+                        Column(
+                          children: [
+                            FilledButton(
+                              onPressed: () => data.importSheetsFromFile(),
+                              child: const Text("从文件导入"),
+                            ),
+                            const SizedBox(height: 8),
+                            if (!IntegratePlatform.isWeb)
+                              FilledButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const AlertDialog(
+                                          content: SocketClientWidget(),
+                                        );
+                                      });
+                                },
+                                child: const Text("从网络导入"),
+                              ),
+                          ],
                         ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.upload),
-                        onPressed: () => data.importSheetsFromFile(),
-                      ),
-                    ],
-                  ),
+                        barrierDismissible: true);
+                  },
                 ),
-                Align(
-                    alignment: Alignment.centerRight,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.download),
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return AlertDialog(
-                                    content: ShareWidget(data: data),
-                                  );
-                                });
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.edit, size: 20),
-                          onPressed:
-                              update ? () => manageSheets(context) : null,
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.arrow_right),
-                          onPressed: update
-                              ? () => changeSheet(context, data, sheet)
-                              : null,
-                        ),
-                      ],
-                    )),
+                const Spacer(),
+                StText.medium(sheet.name),
+                const Spacer(),
+                IconButton(
+                  icon: const Icon(Icons.download),
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: ShareWidget(data: data),
+                          );
+                        });
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.edit, size: 20),
+                  onPressed: update ? () => manageSheets(context) : null,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.arrow_right),
+                  onPressed:
+                      update ? () => changeSheet(context, data, sheet) : null,
+                ),
               ],
             ),
           ),

@@ -1,7 +1,7 @@
 name: attendance
 description: "A software to check attendance."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.1.0+2
+version: 2.0.0+3
 
 environment:
   sdk: '>=3.2.2 <4.0.0'
@@ -25,6 +25,9 @@ dependencies:
   open_filex: ^4.3.4
   share_plus: ^6.3.4
   permission_handler: ^11.1.0
+  network_info_plus: ^3.0.5
+  socket_io_client: ^1.0.2
+  socket_io: ^1.0.1
   flutter_localizations:
     sdk: flutter
   

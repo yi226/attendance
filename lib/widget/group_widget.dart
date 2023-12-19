@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:attendance/config/item.dart';
 import 'package:attendance/style/__init__.dart';
 import 'package:attendance/widget/item_edit_widget.dart';
@@ -117,6 +119,15 @@ class _GroupWidgetState extends State<GroupWidget> {
             StText.medium(
                 !editType ? widget.group.name : '${widget.group.name} (修改中)'),
             const Spacer(),
+            if (!editType)
+              IconButton(
+                  onPressed: () {
+                    final selected =
+                        Random().nextInt(widget.group.persons.length);
+                    MyDialog.alert(
+                        '抽中的人是：${widget.group.persons[selected].name}');
+                  },
+                  icon: const Icon(Icons.casino)),
             IconButton(
                 icon: Icon(!editType ? Icons.edit : Icons.arrow_back),
                 iconSize: 20,

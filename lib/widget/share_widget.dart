@@ -1,6 +1,9 @@
 import 'package:attendance/config/data.dart';
+import 'package:attendance/platform/platform.dart';
 import 'package:attendance/style/__init__.dart';
+import 'package:attendance/share/socket_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:shirne_dialog/shirne_dialog.dart';
 
 class ShareWidget extends StatefulWidget {
   final Data data;
@@ -60,20 +63,45 @@ class _ShareWidgetState extends State<ShareWidget> {
                   child: const Text('Cancel'),
                 ),
               ),
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Find'),
+              if (!IntegratePlatform.isWeb)
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      final willSaved =
+                          _saveData.keys.where((k) => _saveData[k]!).toList();
+                      if (willSaved.isEmpty) {
+                        MyDialog.toast(
+                          '请选择要分享的表',
+                          style: MyDialog.theme.toastStyle?.top(),
+                        );
+                        return;
+                      }
+                      Navigator.of(context).pop();
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: SocketWidget(names: willSaved),
+                            );
+                          });
+                    },
+                    child: const Text('Find'),
+                  ),
                 ),
-              ),
               Expanded(
                 child: TextButton(
                   onPressed: () async {
+                    final willSaved =
+                        _saveData.keys.where((k) => _saveData[k]!).toList();
+                    if (willSaved.isEmpty) {
+                      MyDialog.toast(
+                        '请选择要分享的表',
+                        style: MyDialog.theme.toastStyle?.top(),
+                      );
+                      return;
+                    }
                     Navigator.of(context).pop();
-                    widget.data.exportSheetsToFile(
-                        _saveData.keys.where((k) => _saveData[k]!).toList());
+                    widget.data.exportSheetsToFile(willSaved);
                   },
                   child: const Text('Share'),
                 ),
