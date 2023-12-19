@@ -1,1 +1,3 @@
-{"name":"ab","groups":[{"name":"Group","persons":[{"name":"aaaa","checked":false},{"name":"111","checked":false}]}]}
+{"name":"a","groups":[{"name":"Group","persons":[{"name":"aa","checked":false}]}]}
+{"name":"b","groups":[{"name":"Group","persons":[{"name":"a","checked":false}]}]}
+{"name":"ba1","groups":[{"name":"Group","persons":[{"name":"2","checked":true},{"name":"3","checked":false},{"name":"4","checked":false},{"name":"12","checked":true}]}]}

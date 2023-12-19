@@ -205,8 +205,8 @@ class _SheetWidgetState extends State<SheetWidget> {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  return const AlertDialog(
-                                    content: ShareWidget(),
+                                  return AlertDialog(
+                                    content: ShareWidget(data: data),
                                   );
                                 });
                           },

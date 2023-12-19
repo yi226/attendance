@@ -1,19 +1,29 @@
 import 'package:attendance/config/data.dart';
 import 'package:attendance/style/__init__.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class ShareWidget extends StatefulWidget {
-  const ShareWidget({super.key});
+  final Data data;
+  const ShareWidget({super.key, required this.data});
 
   @override
   State<ShareWidget> createState() => _ShareWidgetState();
 }
 
 class _ShareWidgetState extends State<ShareWidget> {
+  final Map<String, bool> _saveData = {};
+
+  @override
+  initState() {
+    super.initState();
+    for (var sheet in widget.data.sheets) {
+      _saveData[sheet] = false;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final data = context.watch<Data>();
+    final keys = _saveData.keys.toList();
     return SizedBox(
       height: 500,
       width: 300,
@@ -24,12 +34,17 @@ class _ShareWidgetState extends State<ShareWidget> {
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: data.sheets.length,
+              itemCount: keys.length,
               itemBuilder: (context, index) {
                 return CheckboxListTile(
-                  title: Text(data.sheets[index]),
-                  value: false,
-                  onChanged: (v) {},
+                  title: Text(keys[index]),
+                  value: _saveData[keys[index]],
+                  onChanged: (v) {
+                    setState(() {
+                      if (v == null) return;
+                      _saveData[keys[index]] = v;
+                    });
+                  },
                 );
               },
             ),
@@ -50,13 +65,15 @@ class _ShareWidgetState extends State<ShareWidget> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('Near'),
+                  child: const Text('Find'),
                 ),
               ),
               Expanded(
                 child: TextButton(
                   onPressed: () async {
-                    Navigator.of(context).pop(true);
+                    Navigator.of(context).pop();
+                    widget.data.exportSheetsToFile(
+                        _saveData.keys.where((k) => _saveData[k]!).toList());
                   },
                   child: const Text('Share'),
                 ),
