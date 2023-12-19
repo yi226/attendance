@@ -158,8 +158,7 @@ class Data extends ChangeNotifier {
   }
 
   Future<void> importSheetsFromFile() async {
-    final result = await IntegratePlatform.readFile(
-        allowedExtensions: ['a'], fileType: FileType.custom);
+    final result = await IntegratePlatform.readFile(fileType: FileType.any);
     if (!result.success || result.content == null) {
       MyDialog.alert(result.errorMessage ?? 'Failed to import sheets');
       return;
