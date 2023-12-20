@@ -122,10 +122,19 @@ class _GroupWidgetState extends State<GroupWidget> {
             if (!editType)
               IconButton(
                   onPressed: () {
+                    if (widget.group.persons.isEmpty) {
+                      MyDialog.alert(
+                        '该组没有人',
+                        barrierDismissible: true,
+                      );
+                      return;
+                    }
                     final selected =
                         Random().nextInt(widget.group.persons.length);
                     MyDialog.alert(
-                        '抽中的人是：${widget.group.persons[selected].name}');
+                      '抽中的人是：${widget.group.persons[selected].name}',
+                      barrierDismissible: true,
+                    );
                   },
                   icon: const Icon(Icons.casino)),
             IconButton(

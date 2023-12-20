@@ -43,29 +43,18 @@ class Data extends ChangeNotifier {
   }
 
   List<String> _sheets = [];
-  List<String> get sheets => _sheets.isEmpty ? ['Example'] : _sheets;
+  List<String> get sheets => _sheets;
   Sheet? _sheet;
-  Sheet getSheet(bool update) {
+  Sheet? getSheet(bool update) {
     if (update) {
-      _sheet = _getSheet() ??
-          Sheet('Example', [
-            Group('Group', [
-              Person('Person1'),
-              Person('Person2'),
-            ]),
-          ]);
+      _sheet = _getSheet();
     }
-    return _sheet ??= _getSheet() ??
-        Sheet('Example', [
-          Group('Group', [
-            Person('Person1'),
-            Person('Person2'),
-          ]),
-        ]);
+    return _sheet ??= _getSheet();
   }
 
   Sheet? _getSheet() {
     if (_sheets.isEmpty) return null;
+    if (_current.isEmpty) return null;
     final sheetJson = _prefs.getString(_current);
     if (sheetJson == null) return null;
     return Sheet.fromJson(sheetJson);
@@ -95,7 +84,11 @@ class Data extends ChangeNotifier {
     await _prefs.setStringList('sheets', _sheets);
     await _prefs.remove(name);
     if (_current == name) {
-      current = sheets.first;
+      if (_sheets.isEmpty) {
+        current = '';
+      } else {
+        current = _sheets.first;
+      }
     }
     notifyListeners();
   }

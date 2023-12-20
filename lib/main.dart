@@ -15,7 +15,7 @@ void main() {
   if (IntegratePlatform.isDesktop) {
     doWhenWindowReady(() {
       const initialSize = Size(600, 600);
-      appWindow.minSize = const Size(300, 450);
+      appWindow.minSize = const Size(350, 450);
       appWindow.size = initialSize;
       appWindow.show();
     });

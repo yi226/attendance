@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:attendance/config/data.dart';
 import 'package:attendance/config/item.dart';
@@ -30,76 +32,87 @@ class _SheetWidgetState extends State<SheetWidget> {
     String nameList = "";
     int count = 0;
     String? lastName;
-    await MyDialog.alertModal(
-      Form(
-        key: formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
-        child: Column(
-          children: [
-            TextFormField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: '表名',
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('添加表'),
+        content: Form(
+          key: formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: '表名',
+                ),
+                validator: (v) {
+                  return v!.trim().isNotEmpty ? null : "表名不能为空";
+                },
+                onChanged: (v) {
+                  name = v;
+                },
               ),
-              validator: (v) {
-                return v!.trim().isNotEmpty ? null : "表名不能为空";
-              },
-              onChanged: (v) {
-                name = v;
-              },
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              maxLines: 10,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: '人名',
-                hintText: '每行一个人名',
+              const SizedBox(height: 8),
+              Expanded(
+                child: TextFormField(
+                  maxLines: null,
+                  minLines: null,
+                  keyboardType: TextInputType.multiline,
+                  textInputAction: TextInputAction.newline,
+                  expands: true,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '人名',
+                    hintText: '每行一个人名',
+                  ),
+                  validator: (v) {
+                    return v!.trim().isNotEmpty ? null : "人名不能为空";
+                  },
+                  onChanged: (v) {
+                    nameList = v;
+                  },
+                ),
               ),
-              validator: (v) {
-                return v!.trim().isNotEmpty ? null : "人名不能为空";
-              },
-              onChanged: (v) {
-                nameList = v;
-              },
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: const Text('Cancel'),
-        ),
-        FilledButton(
-          onPressed: () async {
-            if ((formKey.currentState as FormState).validate()) {
-              if (data.sheets.contains(name) &&
-                  count == 0 &&
-                  lastName != name) {
-                MyDialog.snack('$name已存在, 若继续将覆盖原表');
-                lastName = name;
-                count++;
-                return;
-              }
-              final nameListData = nameList.split('\n')
-                ..removeWhere((element) => element.isEmpty);
-              final sh = Sheet.fromNameList(name, nameListData);
-              if (sh == null) {
-                return;
-              }
-              data.addSheet(sh);
-              flag = !flag;
+        actions: [
+          TextButton(
+            onPressed: () {
               Navigator.of(context).pop();
-            }
-          },
-          child: const Text('OK'),
-        ),
-      ],
-      title: "新建表",
-      barrierDismissible: true,
+            },
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              if ((formKey.currentState as FormState).validate()) {
+                if (data.sheets.contains(name) &&
+                    count == 0 &&
+                    lastName != name) {
+                  MyDialog.toast(
+                    '$name已存在, 若继续将覆盖原表',
+                    style: MyDialog.theme.toastStyle?.top(),
+                  );
+                  lastName = name;
+                  count++;
+                  return;
+                }
+                final nameListData = nameList.split('\n')
+                  ..removeWhere((element) => element.isEmpty);
+                final sh = Sheet.fromNameList(name, nameListData);
+                if (sh == null) {
+                  return;
+                }
+                data.addSheet(sh);
+                flag = !flag;
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -154,10 +167,71 @@ class _SheetWidgetState extends State<SheetWidget> {
     );
   }
 
+  Widget nullSheet(Data data, BuildContext context) {
+    return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      const Padding(padding: EdgeInsets.all(8), child: StText.big("暂无表，请添加表")),
+      Padding(
+        padding: const EdgeInsets.all(8),
+        child: Card(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () => addSheet(context, data),
+              ),
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const UpdateWidget(),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.upload),
+                onPressed: () {
+                  MyDialog.alert(
+                      Column(
+                        children: [
+                          FilledButton(
+                            onPressed: () => data.importSheetsFromFile(),
+                            child: const Text("从文件导入"),
+                          ),
+                          const SizedBox(height: 8),
+                          if (!IntegratePlatform.isWeb)
+                            FilledButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return const AlertDialog(
+                                        content: SocketClientWidget(),
+                                      );
+                                    });
+                              },
+                              child: const Text("从网络导入"),
+                            ),
+                        ],
+                      ),
+                      barrierDismissible: true);
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final data = context.watch<Data>();
     final sheet = data.getSheet(update);
+    if (sheet == null) {
+      return nullSheet(data, context);
+    }
     return Column(
       children: [
         Padding(
@@ -179,48 +253,60 @@ class _SheetWidgetState extends State<SheetWidget> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.upload),
-                  onPressed: () {
-                    MyDialog.alert(
-                        Column(
-                          children: [
-                            FilledButton(
-                              onPressed: () => data.importSheetsFromFile(),
-                              child: const Text("从文件导入"),
-                            ),
-                            const SizedBox(height: 8),
-                            if (!IntegratePlatform.isWeb)
-                              FilledButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return const AlertDialog(
-                                          content: SocketClientWidget(),
-                                        );
-                                      });
-                                },
-                                child: const Text("从网络导入"),
+                  onPressed: update
+                      ? () {
+                          MyDialog.alert(
+                              Column(
+                                children: [
+                                  FilledButton(
+                                    onPressed: () =>
+                                        data.importSheetsFromFile(),
+                                    child: const Text("从文件导入"),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (!IntegratePlatform.isWeb)
+                                    FilledButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return const AlertDialog(
+                                                content: SocketClientWidget(),
+                                              );
+                                            });
+                                      },
+                                      child: const Text("从网络导入"),
+                                    ),
+                                ],
                               ),
-                          ],
-                        ),
-                        barrierDismissible: true);
-                  },
+                              barrierDismissible: true);
+                        }
+                      : null,
                 ),
                 const Spacer(),
-                StText.medium(sheet.name),
+                SizedBox(
+                    width: min(MediaQuery.of(context).size.width, 800) - 300,
+                    child: Center(
+                      child: StText.medium(
+                        sheet.name,
+                        maxLines: 2,
+                      ),
+                    )),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.download),
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            content: ShareWidget(data: data),
-                          );
-                        });
-                  },
+                  onPressed: update
+                      ? () {
+                          showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  content: ShareWidget(data: data),
+                                );
+                              });
+                        }
+                      : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.edit, size: 20),
