@@ -1,5 +1,7 @@
 import 'package:attendance/share/socket.dart';
 import 'package:attendance/style/__init__.dart';
+import 'package:bonsoir/bonsoir.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
@@ -15,24 +17,55 @@ class _SocketClientWidgetState extends State<SocketClientWidget> {
   final SocketClient _client = SocketClient();
   final _info = NetworkInfo();
   String _ipAddress = 'Unknown';
+  BonsoirDiscovery? _discovery;
+  final _servers = <String>[];
 
   @override
   void initState() {
     super.initState();
-    _initNetworkInfo();
+    _initMultiCastServiceAndNetworkInfo();
   }
 
-  Future<void> _initNetworkInfo() async {
+  Future<void> _initMultiCastServiceAndNetworkInfo() async {
     final ipAddress = await _info.getWifiIP();
     setState(() {
       _ipAddress = ipAddress ?? 'Unknown';
     });
+    _discovery = BonsoirDiscovery(type: '_attendance._tcp');
+    await _discovery?.ready;
+    _discovery!.eventStream!.listen((event) {
+      // `eventStream` is not null as the discovery instance is "ready" !
+      if (event.type == BonsoirDiscoveryEventType.discoveryServiceFound) {
+        if (kDebugMode) {
+          print('Service found : ${event.service?.toJson()}');
+        }
+        final name = event.service!.name.replaceAll('-', '.');
+        if (name == _ipAddress) {
+          return;
+        }
+        _servers.add(name);
+        setState(() {});
+      } else if (event.type == BonsoirDiscoveryEventType.discoveryServiceLost) {
+        if (kDebugMode) {
+          print('Service lost : ${event.service?.toJson()}');
+        }
+        final name = event.service!.name.replaceAll('-', '.');
+        if (name == _ipAddress) {
+          return;
+        }
+        _servers.remove(name);
+        setState(() {});
+      }
+    });
+
+    await _discovery?.start();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _client.close();
+    _discovery?.stop();
     super.dispose();
   }
 
@@ -42,7 +75,7 @@ class _SocketClientWidgetState extends State<SocketClientWidget> {
       listenable: _client,
       builder: (context, child) {
         return SizedBox(
-          height: 240,
+          height: 300,
           width: 300,
           child: Column(
             children: [
@@ -58,7 +91,27 @@ class _SocketClientWidgetState extends State<SocketClientWidget> {
                   hintText: '127.0.0.1',
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 8),
+              const StText.medium('附近设备: '),
+              const SizedBox(height: 8),
+              if (_servers.isNotEmpty)
+                SizedBox(
+                  height: 30,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      for (var i = 0; i < _servers.length; i++)
+                        ElevatedButton(
+                          child: StText.normal(_servers[i]),
+                          onPressed: () {
+                            _controller.text = _servers[i];
+                            setState(() {});
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 8),
               if (_client.inited && !_client.connected)
                 const StText.medium('连接中...'),
               if (_client.inited && !_client.connected)

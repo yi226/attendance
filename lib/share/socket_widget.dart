@@ -1,6 +1,7 @@
 import 'package:attendance/config/data.dart';
 import 'package:attendance/share/socket.dart';
 import 'package:attendance/style/__init__.dart';
+import 'package:bonsoir/bonsoir.dart';
 import 'package:flutter/material.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 
@@ -16,24 +17,34 @@ class _SocketWidgetState extends State<SocketWidget> {
   final _info = NetworkInfo();
   final _server = SocketServer();
   String _ipAddress = 'Unknown';
+  BonsoirBroadcast? _broadcast;
 
   @override
   void initState() {
     super.initState();
-    _initNetworkInfo();
+    _initMultiCastServiceAndNetworkInfo();
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     _server.close();
     super.dispose();
+    await _broadcast?.stop();
   }
 
-  Future<void> _initNetworkInfo() async {
+  Future<void> _initMultiCastServiceAndNetworkInfo() async {
     final ipAddress = await _info.getWifiIP();
     setState(() {
       _ipAddress = ipAddress ?? 'Unknown';
     });
+    final BonsoirService service = BonsoirService(
+      name: _ipAddress.replaceAll('.', '-'),
+      type: '_attendance._tcp',
+      port: 3030,
+    );
+    _broadcast = BonsoirBroadcast(service: service);
+    await _broadcast?.ready;
+    await _broadcast?.start();
   }
 
   @override
