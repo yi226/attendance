@@ -1,4 +1,5 @@
 import 'package:attendance/config/item.dart';
+import 'package:content_resolver/content_resolver.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:attendance/platform/platform.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
+import 'package:uni_links/uni_links.dart';
 
 class Data extends ChangeNotifier {
   // Singleton pattern
@@ -16,12 +18,34 @@ class Data extends ChangeNotifier {
     _init();
   }
 
+  initUniLinks() async {
+    try {
+      final initialLink = await getInitialLink();
+      if (initialLink != null) {
+        final Content content =
+            await ContentResolver.resolveContent(initialLink);
+        args = [
+          initialLink,
+          String.fromCharCodes(content.data),
+          content.mimeType.toString(),
+          content.fileName.toString(),
+        ];
+      }
+    } catch (e) {
+      // Handle exception by warning the user their action did not succeed
+      // return?
+      args = [e.toString()];
+    }
+  }
+
   _init() async {
     _prefs = await SharedPreferences.getInstance();
     _mode = ThemeMode.values[_prefs.getInt('themeMode') ?? 0];
     _sheets = _prefs.getStringList('sheets') ?? [];
     _current = _prefs.getString('current') ?? '';
-
+    if (IntegratePlatform.isAndroid) {
+      initUniLinks();
+    }
     notifyListeners();
   }
 
@@ -39,6 +63,13 @@ class Data extends ChangeNotifier {
   set current(String current) {
     _current = current;
     _prefs.setString('current', current);
+    notifyListeners();
+  }
+
+  List<String> _args = [];
+  List<String> get args => _args;
+  set args(List<String> args) {
+    _args = args;
     notifyListeners();
   }
 
@@ -139,7 +170,7 @@ class Data extends ChangeNotifier {
 
   Future<void> exportSheetsToFile(List<String> names) async {
     final sheetsJSON = exportSheets(names).join('\n');
-    final result = await IntegratePlatform.writeFile(sheetsJSON, "sheets.a");
+    final result = await IntegratePlatform.writeFile(sheetsJSON, "sheets.txt");
     if (!result.success) {
       MyDialog.alert(result.errorMessage ?? 'Failed to export sheets');
       return;
@@ -150,17 +181,23 @@ class Data extends ChangeNotifier {
     MyDialog.alert('Exported sheets to ${result.path}');
   }
 
-  Future<void> importSheetsFromFile() async {
-    final result = await IntegratePlatform.readFile(fileType: FileType.any);
-    if (!result.success || result.content == null) {
-      MyDialog.alert(result.errorMessage ?? 'Failed to import sheets');
-      return;
+  Future<void> importSheetsFromFile({String? path, String? content}) async {
+    List<String> sheets = [];
+    if (content != null) {
+      sheets = content.split('\n');
+    } else {
+      final result =
+          await IntegratePlatform.readFile(path: path, fileType: FileType.any);
+      if (!result.success || result.content == null) {
+        MyDialog.alert(result.errorMessage ?? 'Failed to import sheets');
+        return;
+      }
+      sheets = result.content!.split('\n');
     }
-    final sheets = result.content!.split('\n');
+
     final success = await importSheets(sheets);
     if (success.isNotEmpty) {
-      MyDialog.alert(
-          'Imported sheets from ${result.path}\n names: ${success.join(', ')}');
+      MyDialog.alert('Imported sheets\n names: ${success.join(', ')}');
     }
   }
 }

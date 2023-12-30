@@ -1,4 +1,5 @@
 import 'package:attendance/config/data.dart';
+import 'package:attendance/style/__init__.dart';
 import 'package:attendance/widget/app_layout.dart';
 import 'package:attendance/widget/sheet_widget.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
@@ -8,9 +9,9 @@ import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-void main() {
+void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
-  Data.init();
+  Data.init().args = args.toList();
   runApp(const App());
   if (IntegratePlatform.isDesktop) {
     doWhenWindowReady(() {
@@ -30,7 +31,7 @@ class App extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => Data(),
       builder: (context, child) {
-        final mode = context.select<Data, ThemeMode>((value) => value.mode);
+        final data = context.watch<Data>();
         return MaterialApp(
           title: 'attendance',
           theme: ThemeData(
@@ -54,9 +55,32 @@ class App extends StatelessWidget {
             Locale('zh', 'CN'),
             Locale('zh'),
           ],
-          themeMode: mode,
-          home: const AppLayout(body: SheetWidget()),
-          // home: const UpdateWidget(),
+          themeMode: data.mode,
+          home: AppLayout(
+            body: data.args.isEmpty
+                ? const SheetWidget()
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      StText.medium(data.args.first),
+                      const SizedBox(height: 8),
+                      FilledButton(
+                        onPressed: () async {
+                          if (IntegratePlatform.isAndroid &&
+                              data.args.length == 4) {
+                            final content = data.args[1];
+                            await data.importSheetsFromFile(content: content);
+                          } else {
+                            final path = data.args.first;
+                            await data.importSheetsFromFile(path: path);
+                          }
+                          data.args = [];
+                        },
+                        child: const Text("从该文件导入"),
+                      ),
+                    ],
+                  ),
+          ),
         );
       },
     );
