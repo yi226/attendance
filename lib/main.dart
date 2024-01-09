@@ -11,7 +11,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
-  Data.init().args = args.toList();
+  Data.init().args = Args(path: args.firstOrNull);
   runApp(const App());
   if (IntegratePlatform.isDesktop) {
     doWhenWindowReady(() {
@@ -62,19 +62,20 @@ class App extends StatelessWidget {
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      StText.medium(data.args.first),
+                      StText.medium(data.args.path),
                       const SizedBox(height: 8),
                       FilledButton(
                         onPressed: () async {
-                          if (IntegratePlatform.isAndroid &&
-                              data.args.length == 4) {
-                            final content = data.args[1];
+                          if (data.args.error != null) {
+                            MyDialog.alert(data.args.error);
+                          } else if (data.args.content != null) {
+                            final content = data.args.content;
                             await data.importSheetsFromFile(content: content);
                           } else {
-                            final path = data.args.first;
+                            final path = data.args.path;
                             await data.importSheetsFromFile(path: path);
                           }
-                          data.args = [];
+                          data.args = Args();
                         },
                         child: const Text("从该文件导入"),
                       ),

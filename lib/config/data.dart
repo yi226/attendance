@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:attendance/config/item.dart';
 import 'package:content_resolver/content_resolver.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,6 +12,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 import 'package:uni_links/uni_links.dart';
 
+class Args {
+  String? path;
+  String? content;
+  String? error;
+
+  bool get isEmpty => path == null && content == null && error == null;
+
+  Args({this.path, this.content, this.error});
+}
+
 class Data extends ChangeNotifier {
   // Singleton pattern
   static final Data _data = Data._();
@@ -18,24 +31,27 @@ class Data extends ChangeNotifier {
     _init();
   }
 
-  initUniLinks() async {
+  parseLink(String? link) async {
     try {
-      final initialLink = await getInitialLink();
-      if (initialLink != null) {
-        final Content content =
-            await ContentResolver.resolveContent(initialLink);
-        args = [
-          initialLink,
-          String.fromCharCodes(content.data),
-          content.mimeType.toString(),
-          content.fileName.toString(),
-        ];
+      if (link != null) {
+        final Content content = await ContentResolver.resolveContent(link);
+        args = Args(
+            path: link, content: const Utf8Decoder().convert(content.data));
       }
     } catch (e) {
-      // Handle exception by warning the user their action did not succeed
-      // return?
-      args = [e.toString()];
+      args = Args(error: e.toString());
     }
+  }
+
+  initUniLinks() async {
+    final initialLink = await getInitialLink();
+    parseLink(initialLink);
+    linkStream.listen((String? link) async {
+      parseLink(link);
+    }, onError: (err) {
+      // Handle exception by warning the user their action did not succeed
+      args = Args(error: err.toString());
+    });
   }
 
   _init() async {
@@ -66,9 +82,9 @@ class Data extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<String> _args = [];
-  List<String> get args => _args;
-  set args(List<String> args) {
+  Args _args = Args();
+  Args get args => _args;
+  set args(Args args) {
     _args = args;
     notifyListeners();
   }
