@@ -34,6 +34,7 @@ dependencies:
   uni_links: ^0.5.1
   content_resolver: 
     git: https://github.com/espresso3389/flutter_content_resolver.git
+  google_mlkit_text_recognition: ^0.11.0
   
 
 dev_dependencies:
