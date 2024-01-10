@@ -10,7 +10,9 @@ import 'package:attendance/widget/group_widget.dart';
 import 'package:attendance/widget/search_widget.dart';
 import 'package:attendance/widget/share_widget.dart';
 import 'package:attendance/widget/sheet_edit_widget.dart';
+import 'package:attendance/widget/text_recognition.dart';
 import 'package:attendance/widget/update_widget.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
@@ -167,6 +169,39 @@ class _SheetWidgetState extends State<SheetWidget> {
     );
   }
 
+  showAddSheet(BuildContext context, Data data) {
+    MyDialog.alert(
+      Column(
+        children: [
+          FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              addSheet(context, data);
+            },
+            child: const Text("手动输入"),
+          ),
+          const SizedBox(height: 8),
+          if (IntegratePlatform.isMobile)
+            FilledButton(
+              onPressed: () async {
+                final state = Navigator.of(context);
+                state.pop();
+                FilePickerResult? result =
+                    await FilePicker.platform.pickFiles(type: FileType.image);
+                if (result != null) {
+                  final path = result.files.first.path!;
+                  state.push(MaterialPageRoute(
+                      builder: (context) => TextRecWidget(path: path)));
+                }
+              },
+              child: const Text("图片导入"),
+            ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
   Widget nullSheet(Data data, BuildContext context) {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       const Padding(padding: EdgeInsets.all(8), child: StText.big("暂无表，请添加表")),
@@ -178,7 +213,7 @@ class _SheetWidgetState extends State<SheetWidget> {
             children: [
               IconButton(
                 icon: const Icon(Icons.add),
-                onPressed: () => addSheet(context, data),
+                onPressed: () => showAddSheet(context, data),
               ),
               IconButton(
                 icon: const Icon(Icons.info_outline),
@@ -241,7 +276,7 @@ class _SheetWidgetState extends State<SheetWidget> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.add),
-                  onPressed: update ? () => addSheet(context, data) : null,
+                  onPressed: update ? () => showAddSheet(context, data) : null,
                 ),
                 IconButton(
                   icon: const Icon(Icons.info_outline),

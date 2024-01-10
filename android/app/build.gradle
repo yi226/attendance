@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.attendance"
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 33
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -46,7 +46,7 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -58,12 +58,16 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    aaptOptions {
+        noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
+    }
+}
+
+dependencies {
+    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0'
 }
 
 flutter {
     source '../..'
-}
-
-dependencies {
-    implementation 'com.google.mlkit:text-recognition-chinese:16.0.0-beta6'
 }

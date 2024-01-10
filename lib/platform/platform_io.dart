@@ -380,6 +380,16 @@ class IntegratePlatform {
     ui.FrameInfo frame = await codec.getNextFrame();
     return frame.image;
   }
+
+  static Future<(int, int)> getImageInfo(String path) async {
+    final list = await File(path).readAsBytes();
+    ui.Codec codec = await ui.instantiateImageCodec(list);
+    ui.FrameInfo frame = await codec.getNextFrame();
+    final width = frame.image.width;
+    final height = frame.image.height;
+    codec.dispose();
+    return (width, height);
+  }
 }
 
 enum ContentType {
