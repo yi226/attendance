@@ -1,6 +1,6 @@
 import 'package:attendance/widget/window.dart';
 import 'package:flutter/material.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget body;

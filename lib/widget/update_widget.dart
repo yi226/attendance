@@ -1,6 +1,6 @@
 import 'package:attendance/config/version.dart';
 import 'package:attendance/platform/platform.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:attendance/widget/window.dart';
 import 'package:flutter/material.dart';
 

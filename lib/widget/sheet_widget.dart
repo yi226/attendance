@@ -14,6 +14,7 @@ import 'package:attendance/widget/text_recognition.dart';
 import 'package:attendance/widget/update_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';
 
@@ -186,8 +187,15 @@ class _SheetWidgetState extends State<SheetWidget> {
               onPressed: () async {
                 final state = Navigator.of(context);
                 state.pop();
-                FilePickerResult? result =
-                    await FilePicker.platform.pickFiles(type: FileType.image);
+                if (IntegratePlatform.isMobile) {
+                  final status = await Permission.photos.request();
+                  if (status.isDenied) {
+                    MyDialog.alert('请授予权限');
+                    return;
+                  }
+                }
+                FilePickerResult? result = await FilePicker.platform
+                    .pickFiles(type: FileType.image, withData: true);
                 if (result != null) {
                   final path = result.files.first.path!;
                   state.push(MaterialPageRoute(
@@ -195,6 +203,35 @@ class _SheetWidgetState extends State<SheetWidget> {
                 }
               },
               child: const Text("图片导入"),
+            ),
+        ],
+      ),
+      barrierDismissible: true,
+    );
+  }
+
+  showImportSheet(BuildContext context, Data data) {
+    MyDialog.alert(
+      Column(
+        children: [
+          FilledButton(
+            onPressed: () => data.importSheetsFromFile(),
+            child: const Text("从文件导入"),
+          ),
+          const SizedBox(height: 8),
+          if (!IntegratePlatform.isWeb)
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return const AlertDialog(
+                        content: SocketClientWidget(),
+                      );
+                    });
+              },
+              child: const Text("从网络导入"),
             ),
         ],
       ),
@@ -225,33 +262,7 @@ class _SheetWidgetState extends State<SheetWidget> {
               ),
               IconButton(
                 icon: const Icon(Icons.upload),
-                onPressed: () {
-                  MyDialog.alert(
-                      Column(
-                        children: [
-                          FilledButton(
-                            onPressed: () => data.importSheetsFromFile(),
-                            child: const Text("从文件导入"),
-                          ),
-                          const SizedBox(height: 8),
-                          if (!IntegratePlatform.isWeb)
-                            FilledButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return const AlertDialog(
-                                        content: SocketClientWidget(),
-                                      );
-                                    });
-                              },
-                              child: const Text("从网络导入"),
-                            ),
-                        ],
-                      ),
-                      barrierDismissible: true);
-                },
+                onPressed: () => showImportSheet(context, data),
               ),
             ],
           ),
@@ -288,47 +299,19 @@ class _SheetWidgetState extends State<SheetWidget> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.upload),
-                  onPressed: update
-                      ? () {
-                          MyDialog.alert(
-                              Column(
-                                children: [
-                                  FilledButton(
-                                    onPressed: () =>
-                                        data.importSheetsFromFile(),
-                                    child: const Text("从文件导入"),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  if (!IntegratePlatform.isWeb)
-                                    FilledButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return const AlertDialog(
-                                                content: SocketClientWidget(),
-                                              );
-                                            });
-                                      },
-                                      child: const Text("从网络导入"),
-                                    ),
-                                ],
-                              ),
-                              barrierDismissible: true);
-                        }
-                      : null,
+                  onPressed:
+                      update ? () => showImportSheet(context, data) : null,
                 ),
-                const Spacer(),
-                SizedBox(
-                    width: min(MediaQuery.of(context).size.width, 800) - 300,
-                    child: Center(
-                      child: StText.medium(
-                        sheet.name,
-                        maxLines: 2,
-                      ),
-                    )),
-                const Spacer(),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Center(
+                    child: StText.medium(
+                      sheet.name,
+                      maxLines: 2,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.download),
                   onPressed: update

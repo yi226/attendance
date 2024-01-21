@@ -1,6 +1,6 @@
 import 'package:attendance/config/data.dart';
 import 'package:attendance/platform/platform.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:attendance/share/socket_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:shirne_dialog/shirne_dialog.dart';

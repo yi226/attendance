@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:attendance/config/item.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:attendance/widget/item_edit_widget.dart';
 import 'package:attendance/widget/item_widget.dart';
 import 'package:flutter/material.dart';
@@ -108,92 +108,93 @@ class _GroupWidgetState extends State<GroupWidget> {
     return Card(
       color: ColorPlate.lightGray,
       surfaceTintColor: ColorPlate.lightGray,
-      child: ExpansionTile(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        clipBehavior: Clip.antiAlias,
-        initiallyExpanded: widget.group.show,
-        title: Row(
-          children: [
-            StText.medium(
-                !editType ? widget.group.name : '${widget.group.name} (修改中)'),
-            const Spacer(),
-            if (!editType)
-              IconButton(
-                  onPressed: () {
-                    if (widget.group.persons.isEmpty) {
-                      MyDialog.alert(
-                        '该组没有人',
-                        barrierDismissible: true,
-                      );
-                      return;
-                    }
-                    final selected =
-                        Random().nextInt(widget.group.persons.length);
-                    MyDialog.alert(
-                      '抽中的人是：${widget.group.persons[selected].name}',
-                      barrierDismissible: true,
-                    );
-                  },
-                  icon: const Icon(Icons.casino)),
-            IconButton(
-                icon: Icon(!editType ? Icons.edit : Icons.arrow_back),
-                iconSize: 20,
-                onPressed: () {
-                  setState(() {
-                    editType = !editType;
-                  });
-                }),
-          ],
-        ),
-        leading: !editType
-            ? Checkbox(
-                value: groupChecked,
-                onChanged: (value) {
-                  setState(() {
-                    groupChecked = value!;
-                    for (Person person in widget.group.persons) {
-                      person.checked = value;
-                    }
-                    notChecked = getNotChecked();
-                    widget.onChanged();
-                  });
-                },
-              )
-            : null,
-        trailing: !editType
-            ? InkWell(
-                onTap: () {
-                  MyDialog.popup(
-                    SizedBox(
-                      width: double.infinity,
-                      child: notChecked > 0
-                          ? SingleChildScrollView(
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: notCheckedPersons
-                                      .map((e) => StText.normal(e))
-                                      .toList()
-                                    ..insert(0,
-                                        const StText.medium('Not checked:'))),
-                            )
-                          : const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [StText.medium('All checked')],
-                            ),
-                    ),
-                  );
-                },
-                child: notChecked > 0
-                    ? StText.warning('$notChecked remaining')
-                    : const Icon(
-                        Icons.check,
-                        color: ColorPlate.green,
-                      ),
-              )
-            : IconButton(onPressed: addPerson, icon: const Icon(Icons.add)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          ListTile(
+            title: Row(
+              children: [
+                StText.medium(!editType
+                    ? widget.group.name
+                    : '${widget.group.name} (修改中)'),
+                const Spacer(),
+                if (!editType)
+                  IconButton(
+                      onPressed: () {
+                        if (widget.group.persons.isEmpty) {
+                          MyDialog.alert(
+                            '该组没有人',
+                            barrierDismissible: true,
+                          );
+                          return;
+                        }
+                        final selected =
+                            Random().nextInt(widget.group.persons.length);
+                        MyDialog.alert(
+                          '抽中的人是：${widget.group.persons[selected].name}',
+                          barrierDismissible: true,
+                        );
+                      },
+                      icon: const Icon(Icons.casino)),
+                IconButton(
+                    icon: Icon(!editType ? Icons.edit : Icons.arrow_back),
+                    iconSize: 20,
+                    onPressed: () {
+                      setState(() {
+                        editType = !editType;
+                      });
+                    }),
+              ],
+            ),
+            leading: !editType
+                ? Checkbox(
+                    value: groupChecked,
+                    onChanged: (value) {
+                      setState(() {
+                        groupChecked = value!;
+                        for (Person person in widget.group.persons) {
+                          person.checked = value;
+                        }
+                        notChecked = getNotChecked();
+                        widget.onChanged();
+                      });
+                    },
+                  )
+                : null,
+            trailing: !editType
+                ? InkWell(
+                    onTap: () {
+                      MyDialog.popup(
+                        SizedBox(
+                          width: double.infinity,
+                          child: notChecked > 0
+                              ? SingleChildScrollView(
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: notCheckedPersons
+                                          .map((e) => StText.normal(e))
+                                          .toList()
+                                        ..insert(
+                                            0,
+                                            const StText.medium(
+                                                'Not checked:'))),
+                                )
+                              : const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [StText.medium('All checked')],
+                                ),
+                        ),
+                      );
+                    },
+                    child: notChecked > 0
+                        ? StText.warning('$notChecked remaining')
+                        : const Icon(
+                            Icons.check,
+                            color: ColorPlate.green,
+                          ),
+                  )
+                : IconButton(onPressed: addPerson, icon: const Icon(Icons.add)),
+          ),
           if (!editType)
             for (Person person in widget.group.persons)
               if (person.show)

@@ -1,5 +1,5 @@
 import 'package:attendance/config/item.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:flutter/material.dart';
 
 class ItemWidget extends StatefulWidget {

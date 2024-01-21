@@ -1,5 +1,5 @@
 import 'package:attendance/share/socket.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:bonsoir/bonsoir.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

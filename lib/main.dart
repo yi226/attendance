@@ -1,5 +1,5 @@
 import 'package:attendance/config/data.dart';
-import 'package:attendance/style/__init__.dart';
+import 'package:attendance/style/style.dart';
 import 'package:attendance/widget/app_layout.dart';
 import 'package:attendance/widget/sheet_widget.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
