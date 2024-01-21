@@ -211,7 +211,7 @@ class _TextRecWidgetState extends State<TextRecWidget> {
                         [],
                         barrierDismissible: true,
                       );
-                      if(result == true) navState.pop();
+                      if (result == true) navState.pop();
                     },
                   ),
                 ),
@@ -262,17 +262,17 @@ class ImageTextBoxPainter extends CustomPainter {
     origin = Size(_image.width.toDouble(), _image.height.toDouble());
     final src = Rect.fromLTWH(0, 0, origin.width, origin.height);
     radio = size.width / origin.width;
-    double dst_height = origin.height * radio;
+    double dstHeight = origin.height * radio;
     Rect dst = Rect.zero;
-    if (dst_height > size.height) {
+    if (dstHeight > size.height) {
       radio = size.height / origin.height;
       final left = (size.width - origin.width * radio) / 2;
       bias = Size(left, 0);
       dst = Rect.fromLTWH(0, 0, origin.width * radio, size.height);
     } else {
-      final top = (size.height - dst_height) / 2;
+      final top = (size.height - dstHeight) / 2;
       bias = Size(0, top);
-      dst = Rect.fromLTWH(0, top, size.width, dst_height);
+      dst = Rect.fromLTWH(0, top, size.width, dstHeight);
     }
     return (src, dst);
   }

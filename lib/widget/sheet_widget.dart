@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:attendance/config/data.dart';
 import 'package:attendance/config/item.dart';
